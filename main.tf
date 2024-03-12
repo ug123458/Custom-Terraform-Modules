@@ -49,7 +49,7 @@ module "public_ip" {
   location            = module.resource_group.resource_group_location
   resource_group_name = module.resource_group.resource_group_name
   allocation_method   = "Dynamic"
-  
+
 }
 
 # Create a network interface
@@ -60,7 +60,7 @@ module "nic" {
   location             = module.resource_group.resource_group_location
   resource_group_name  = module.resource_group.resource_group_name
   subnet_id            = module.subnet.subnet_id
-  public_ip_address_id = module.public_ip.public_ip_id
+  public_ip_address_id = module.public_ip.id
 }
 
 #Create a network security group association
@@ -73,31 +73,31 @@ module "nsg_association" {
 
 # Create a virtual machine
 resource "azurerm_virtual_machine" "vm" {
-    name                  = "${var.prefix}-vm"
-    location              = module.resource_group.resource_group_location
-    resource_group_name   = module.resource_group.resource_group_name
-    network_interface_ids = [module.nic.id]
-    vm_size               = "Standard_DS1_v2"
-    
-    storage_image_reference {
-        publisher = "Canonical"
-        offer     = "UbuntuServer"
-        sku       = "16.04.0-LTS"
-        version   = "latest"
-    }
-    
-    storage_os_disk {
-        name              = "${var.prefix}-osdisk"
-        caching           = "ReadWrite"
-        create_option     = "FromImage"
-        managed_disk_type = "Premium_LRS"
-    }
-    
-    os_profile {
-        computer_name  = "${var.prefix}-vm"
-        admin_username = "adminuser"
-        admin_password = "Password1234!"
-    }
-    
-  
+  name                  = "${var.prefix}-vm"
+  location              = module.resource_group.resource_group_location
+  resource_group_name   = module.resource_group.resource_group_name
+  network_interface_ids = [module.nic.id]
+  vm_size               = "Standard_DS1_v2"
+
+  storage_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "16.04.0-LTS"
+    version   = "latest"
+  }
+
+  storage_os_disk {
+    name              = "${var.prefix}-osdisk"
+    caching           = "ReadWrite"
+    create_option     = "FromImage"
+    managed_disk_type = "Premium_LRS"
+  }
+
+  os_profile {
+    computer_name  = "${var.prefix}-vm"
+    admin_username = "adminuser"
+    admin_password = "Password1234!"
+  }
+
+
 }
