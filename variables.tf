@@ -1,7 +1,3 @@
-variable "name" {
-  type = string
-}
-
-variable "location" {
-  type = string
+variable "prefix" {
+  default = "test-module"
 }
