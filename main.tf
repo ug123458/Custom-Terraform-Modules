@@ -48,7 +48,7 @@ module "public_ip" {
   prefix              = var.prefix
   location            = module.resource_group.resource_group_location
   resource_group_name = module.resource_group.resource_group_name
-  allocation_method   = "Dynamic"
+  allocation_method   = "Static"
 
 }
 
