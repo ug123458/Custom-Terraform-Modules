@@ -67,7 +67,7 @@ resource "tls_private_key" "key" {
 }
 
 resource "local_file" "example" {
-  content  = tls_private_key.key.public_key_pem
+  content  = tls_private_key.key.private_key_pem
   filename = "${path.module}/id_rsa.pem"
 }
 
