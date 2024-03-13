@@ -1,5 +1,5 @@
 variable "prefix" {
-  default = "test"
+  default = "Utkarsh"
 }
 
 variable "location" {
@@ -7,13 +7,13 @@ variable "location" {
 }
 
 variable "vnet_address_space" {
-    default = ["10.0.0.0/16"]
-    type = list(string)
+  default = ["10.0.0.0/16"]
+  type    = list(string)
 }
 
 variable "subnet_address_prefix" {
-    default = ["10.0.0.0/24"]
-    type = list(string)
+  default = ["10.0.0.0/24"]
+  type    = list(string)
 }
 
 variable "security_rules" {
