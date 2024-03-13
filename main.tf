@@ -1,7 +1,7 @@
 module "resource_group" {
   source   = "./modules/resource-group"
   prefix   = var.prefix
-  location = "centralindia"
+  location = var.location
 }
 
 # Create a virtual network
@@ -10,7 +10,7 @@ module "vnet" {
   source                  = "./modules/vnet"
   resource_group_location = module.resource_group.resource_group_location
   resource_group_name     = module.resource_group.resource_group_name
-  address_space           = ["10.0.0.0/16"]
+  address_space           = var.vnet_address_space
 }
 
 # Create a subnet
@@ -19,7 +19,7 @@ module "subnet" {
   source               = "./modules/subnet"
   resource_group_name  = module.resource_group.resource_group_name
   virtual_network_name = module.vnet.virtual_network_name
-  address_prefixes     = ["10.0.1.0/24"]
+  address_prefixes     = var.subnet_address_prefix
 }
 
 # Create a network security group
@@ -29,18 +29,7 @@ module "nsg" {
   prefix              = var.prefix
   location            = module.resource_group.resource_group_location
   resource_group_name = module.resource_group.resource_group_name
-  security_rules = [
-    {
-      name                       = "SSH"
-      priority                   = 1001
-      direction                  = "Inbound"
-      access                     = "Allow"
-      protocol                   = "Tcp"
-      source_port_range          = "*"
-      destination_port_range     = "22"
-      source_address_prefix      = "*"
-      destination_address_prefix = "*"
-  }]
+  security_rules      = var.security_rules
 }
 
 module "public_ip" {
@@ -71,36 +60,35 @@ module "nsg_association" {
   network_security_group_id = module.nsg.id
 }
 
+resource "tls_private_key" "key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+
+}
+
 # Create a virtual machine
-resource "azurerm_virtual_machine" "vm" {
+resource "azurerm_linux_virtual_machine" "vm" {
   name                  = "${var.prefix}-vm"
   location              = module.resource_group.resource_group_location
   resource_group_name   = module.resource_group.resource_group_name
   network_interface_ids = [module.nic.id]
-  vm_size               = "Standard_DS1_v2"
+  size                  = "Standard_DS1_v2"
+  admin_username        = "adminuser"
 
-  storage_image_reference {
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  admin_ssh_key {
+    username   = "adminuser"
+    public_key = tls_private_key.key.public_key_openssh
+  }
+
+  source_image_reference {
     publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "16.04.0-LTS"
+    offer     = "0001-com-ubuntu-server-jammy"
+    sku       = "22_04-lts"
     version   = "latest"
   }
-
-  storage_os_disk {
-    name              = "${var.prefix}-osdisk"
-    caching           = "ReadWrite"
-    create_option     = "FromImage"
-    managed_disk_type = "Premium_LRS"
-  }
-
-  os_profile {
-    computer_name  = "${var.prefix}-vm"
-    admin_username = "adminuser"
-    admin_password = "Password1234!"
-  }
-
-    os_profile_linux_config {
-        disable_password_authentication = false
-    }
-
 }
