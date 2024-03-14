@@ -11,3 +11,7 @@ output "vm_ip_address" {
 output "ssh_key" {
   value = tls_private_key.key.private_key_openssh
 }
+
+output "username" {
+  value = var.username
+}
