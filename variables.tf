@@ -6,6 +6,10 @@ variable "location" {
   default = "eastus"
 }
 
+variable "username" {
+  default = "admin"
+}
+
 variable "vnet_address_space" {
   default = ["10.0.0.0/16"]
   type    = list(string)

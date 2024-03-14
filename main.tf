@@ -75,7 +75,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   resource_group_name   = module.resource_group.resource_group_name
   network_interface_ids = [module.nic.id]
   size                  = "Standard_DS1_v2"
-  admin_username        = "adminuser"
+  admin_username        = var.username
 
   os_disk {
     caching              = "ReadWrite"
@@ -83,7 +83,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   }
 
   admin_ssh_key {
-    username   = "adminuser"
+    username   = var.username
     public_key = tls_private_key.key.public_key_openssh
   }
 
