@@ -38,6 +38,7 @@ module "public_ip" {
   location            = module.resource_group.resource_group_location
   resource_group_name = module.resource_group.resource_group_name
   allocation_method   = "Static"
+  count               = var.public_ip ? 1 : 0
 
 }
 

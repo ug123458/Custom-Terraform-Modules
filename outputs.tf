@@ -4,7 +4,7 @@ output "vm_name" {
 }
 
 output "vm_ip_address" {
-  value = module.public_ip.ip_address
+  value = module.public_ip.ip_address ? module.public_ip.ip_address : azurerm_linux_virtual_machine.vm.private_ip_address
 
 }
 

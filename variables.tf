@@ -2,6 +2,11 @@ variable "prefix" {
   default = "Utkarsh"
 }
 
+variable "public_ip" {
+  type    = bool
+  default = true
+}
+
 variable "location" {
   default = "eastus"
 }
