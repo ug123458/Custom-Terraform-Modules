@@ -50,7 +50,7 @@ module "nic" {
   location             = module.resource_group.resource_group_location
   resource_group_name  = module.resource_group.resource_group_name
   subnet_id            = module.subnet.subnet_id
-  public_ip_address_id = var.public_ip ? element(module.public_ip.id,0) : null
+  public_ip_address_id = var.public_ip ? element(module.public_ip, 0) : null
 }
 
 #Create a network security group association
