@@ -1,52 +1,49 @@
-variable "prefix" {
-  default = "Utkarsh"
-}
-
-variable "public_ip" {
-  type    = bool
-  default = true
+variable "resource_group_name" {
+  description = "Name of the resource group"
+  type        = string
 }
 
 variable "location" {
-  default = "eastus"
+  description = "Azure region where the resources will be deployed"
+  type        = string
 }
 
-variable "username" {
-  default = "admin"
+variable "function_app_name" {
+  description = "Name of the function app"
+  type        = string
 }
 
-variable "vnet_address_space" {
-  default = ["10.0.0.0/16"]
-  type    = list(string)
+variable "storage_account_name" {
+  description = "Name of the storage account"
+  type        = string
 }
 
-variable "subnet_address_prefix" {
-  default = ["10.0.0.0/24"]
-  type    = list(string)
+variable "sql_server_name" {
+  description = "Name of the SQL Server"
+  type        = string
 }
 
-variable "security_rules" {
-  default = [
-    {
-      name                       = "SSH"
-      priority                   = 1001
-      direction                  = "Inbound"
-      access                     = "Allow"
-      protocol                   = "Tcp"
-      source_port_range          = "*"
-      destination_port_range     = "22"
-      source_address_prefix      = "*"
-      destination_address_prefix = "*"
-  }]
-  type = list(object({
-    name                       = string
-    priority                   = number
-    direction                  = string
-    access                     = string
-    protocol                   = string
-    source_port_range          = string
-    destination_port_range     = string
-    source_address_prefix      = string
-    destination_address_prefix = string
-  }))
+variable "sql_database_name" {
+  description = "Name of the SQL Database"
+  type        = string
+}
+
+variable "vnet_name" {
+  description = "Name of the Virtual Network"
+  type        = string
+}
+
+variable "subnet_name" {
+  description = "Name of the Subnet"
+  type        = string
+}
+
+variable "app_service_plan_name" {
+  description = "Name of the App Service Plan"
+  type        = string
+}
+
+variable "private_endpoint_name" {
+  description = "Name of the private endpoint"
+  type        = string
 }
