@@ -1,38 +1,56 @@
 # Create a resource group
-resource "azurerm_resource_group" "example" {
-  name     = var.resource_group_name
+module "rg" {
+  source = "./modules/resource-group"
+  prefix = var.resource_group_name
   location = var.location
 }
 
-# Create a storage account
-resource "azurerm_storage_account" "example" {
-  name                     = var.storage_account_name
-  resource_group_name      = azurerm_resource_group.example.name
-  location                 = azurerm_resource_group.example.location
-  account_tier             = "Standard"
+# Create a vnet 
+module "vnet" {
+  source = "./modules/vnet"
+  name = var.vnet_name
+  resource_group_name = module.rg.resource_group_name
+  resource_group_location = module.rg.resource_group_location
+  address_space = var.address_space
+}
+
+# Create a subnet
+module "subnet" {
+  source = "./modules/subnet"
+  name = var.subnet_name
+  resource_group_name = module.rg.resource_group_name
+  virtual_network_name = module.vnet.vnet_name
+  address_prefixes = var.address_prefixes
+}
+
+module "storage_acc" {
+  source = "./modules/storage-account"
+  name = var.storage_account_name
+  resource_group_name = module.rg.resource_group_name
+  location = module.rg.resource_group_location
+  account_tier = "Standard"
   account_replication_type = "LRS"
 }
 
-# Create an App Service Plan
-resource "azurerm_app_service_plan" "example" {
-  name                = var.app_service_plan_name
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
 
-  sku {
-    tier = "Standard"
-    size = "S1"
-  }
+module "appservice_plan" {
+  source = "./modules/appservice-plan"
+  name = var.app_service_plan_name
+  location = module.rg.resource_group_location
+  resource_group_name = module.rg.resource_group_name
+  sku_tier = "Standard"
+  sku_size = "S1"
 }
+
 
 # Create a function app
 resource "azurerm_function_app" "example" {
   name                       = var.function_app_name
-  location                   = azurerm_resource_group.example.location
-  resource_group_name        = azurerm_resource_group.example.name
-  app_service_plan_id        = azurerm_app_service_plan.example.id
-  storage_account_name       = azurerm_storage_account.example.name
-  storage_account_access_key = azurerm_storage_account.example.primary_access_key
+  location                   = module.rg.resource_group_location
+  resource_group_name        = module.rg.resource_group_name
+  app_service_plan_id        = module.appservice_plan.id
+  storage_account_name       = module.storage_acc.name
+  storage_account_access_key = module.storage_acc.access_key
   os_type                    = "linux"
   https_only                 = true
 
@@ -52,8 +70,8 @@ resource "azurerm_function_app" "example" {
 # Create a SQL Server
 resource "azurerm_sql_server" "example" {
   name                         = var.sql_server_name
-  resource_group_name          = azurerm_resource_group.example.name
-  location                     = azurerm_resource_group.example.location
+  resource_group_name          = module.rg.resource_group_name
+  location                     = module.rg.resource_group_location
   version                      = "12.0"
   administrator_login          = "adminuser"
   administrator_login_password = "AdminPassword123!"
@@ -66,42 +84,23 @@ resource "azurerm_sql_server" "example" {
 # Create a SQL Database
 resource "azurerm_sql_database" "example" {
   name                = var.sql_database_name
-  resource_group_name = azurerm_resource_group.example.name
+  resource_group_name = module.rg.resource_group_name
   server_name         = azurerm_sql_server.example.name
-  location            = azurerm_sql_server.example.location
+  location            = module.rg.resource_group_location
   edition             = "Standard"
   collation           = "SQL_Latin1_General_CP1_CI_AS"
   max_size_bytes      = "1073741824"
   create_mode         = "Default"
 }
 
-# Create a virtual network
-resource "azurerm_virtual_network" "example" {
-  name                = var.vnet_name
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-  address_space       = ["10.0.0.0/16"]
-}
 
-# Create a subnet
-resource "azurerm_subnet" "example" {
-  name                 = var.subnet_name
-  resource_group_name  = azurerm_resource_group.example.name
-  virtual_network_name = azurerm_virtual_network.example.name
-  address_prefixes     = ["10.0.1.0/24"]
-}
+module "private_endpoint" {
+  source = "./modules/private-endpoint"
+  private_endpoint_name = var.private_endpoint_name
+  location = module.rg.resource_group_location
+  resource_group_name = module.rg.resource_group_name
+  subnet_id = module.subnet.subnet_id
+  sql_server_id = azurerm_sql_server.example.id
+  sql_server_name = var.sql_server_name
 
-# Create a private endpoint
-resource "azurerm_private_endpoint" "example" {
-  name                = var.private_endpoint_name
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-  subnet_id           = azurerm_subnet.example.id
-
-  private_service_connection {
-    name                           = "psc-${var.sql_server_name}"
-    is_manual_connection           = false
-    private_connection_resource_id = azurerm_sql_server.example.id
-    subresource_names              = ["sqlServer"]
-  }
 }
