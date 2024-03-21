@@ -13,19 +13,19 @@ variable "location" {
 variable "function_app_name" {
   description = "Name of the function app"
   type        = string
-  default     = "utkfunctionapp"
+  default     = "defaultdemofunctionapp"
 }
 
 variable "storage_account_name" {
   description = "Name of the storage account"
   type        = string
-  default     = "utkarshstorageacc"
+  default     = "defaultdemostorageacc"
 }
 
 variable "sql_server_name" {
   description = "Name of the SQL Server"
   type        = string
-  default     = "utksqlserver"
+  default     = "defaultdemosqlserver"
 }
 
 variable "sql_database_name" {
