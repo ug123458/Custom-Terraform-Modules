@@ -21,6 +21,16 @@ module "subnet" {
   resource_group_name  = module.rg.resource_group_name
   virtual_network_name = module.vnet.virtual_network_name
   address_prefixes     = var.address_prefixes
+
+}
+
+resource "azurerm_subnet" "snet" {
+
+  name                 = "${var.subnet_name}-snet"
+  resource_group_name  = module.rg.resource_group_name
+  virtual_network_name = module.vnet.virtual_network_name
+  address_prefixes     = var.address_prefixes
+
 }
 
 module "storage_acc" {
@@ -100,7 +110,7 @@ module "private_endpoint" {
   private_endpoint_name = var.private_endpoint_name
   location              = module.rg.resource_group_location
   resource_group_name   = module.rg.resource_group_name
-  subnet_id             = module.subnet.subnet_id
+  subnet_id             = azurerm_subnet.snet.id
   sql_server_id         = azurerm_mssql_server.example.id
   sql_server_name       = var.sql_server_name
 
