@@ -19,7 +19,7 @@ module "subnet" {
   source = "./modules/subnet"
   name = var.subnet_name
   resource_group_name = module.rg.resource_group_name
-  virtual_network_name = module.vnet.vnet_name
+  virtual_network_name = module.vnet.virtual_network_name
   address_prefixes = var.address_prefixes
 }
 

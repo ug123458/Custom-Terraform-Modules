@@ -10,5 +10,5 @@ output "sql_server_fqdn" {
 
 output "private_endpoint_private_ip_address" {
   description = "The private IP address of the private endpoint"
-  value       = azurerm_private_endpoint.example.private_service_connection.0.private_ip_address
+  value       = module.private_endpoint.private_ip_address
 }

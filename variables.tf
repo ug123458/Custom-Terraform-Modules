@@ -13,49 +13,49 @@ variable "location" {
 variable "function_app_name" {
   description = "Name of the function app"
   type        = string
-  default     = "default_function_app"
+  default     = "utkfunctionapp"
 }
 
 variable "storage_account_name" {
   description = "Name of the storage account"
   type        = string
-  default     = "default_storage_account"
+  default     = "utkarshstorageacc"
 }
 
 variable "sql_server_name" {
   description = "Name of the SQL Server"
   type        = string
-  default     = "default_sql_server"
+  default     = "utksqlserver"
 }
 
 variable "sql_database_name" {
   description = "Name of the SQL Database"
   type        = string
-  default     = "default_sql_database"
+  default     = "sql_database"
 }
 
 variable "vnet_name" {
   description = "Name of the Virtual Network"
   type        = string
-  default     = "default_vnet"
+  default     = "defaultvnet"
 }
 
 variable "subnet_name" {
   description = "Name of the Subnet"
   type        = string
-  default     = "default_subnet"
+  default     = "defaultsubnet"
 }
 
 variable "app_service_plan_name" {
   description = "Name of the App Service Plan"
   type        = string
-  default     = "default_app_service_plan"
+  default     = "defaultappserviceplan"
 }
 
 variable "private_endpoint_name" {
   description = "Name of the private endpoint"
   type        = string
-  default     = "default_private_endpoint"
+  default     = "defaultprivateendpoint"
 }
 
 variable "address_prefixes" {

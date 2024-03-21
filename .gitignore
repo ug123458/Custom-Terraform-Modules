@@ -1,1 +1,4 @@
 providers.tf
+.terraform
+*.terraform.*
+terraform.*
