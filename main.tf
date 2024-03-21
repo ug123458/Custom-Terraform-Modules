@@ -93,9 +93,6 @@ resource "azurerm_mssql_database" "example" {
   server_id   = azurerm_mssql_server.example.id
   collation   = "SQL_Latin1_General_CP1_CI_AS"
   create_mode = "Default"
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 module "private_endpoint" {
