@@ -42,33 +42,35 @@ module "appservice_plan" {
   sku_size = "S1"
 }
 
-
 # Create a function app
-resource "azurerm_function_app" "example" {
+resource "azurerm_linux_function_app" "example" {
   name                       = var.function_app_name
   location                   = module.rg.resource_group_location
   resource_group_name        = module.rg.resource_group_name
-  app_service_plan_id        = module.appservice_plan.id
+  
+  service_plan_id        = module.appservice_plan.id
   storage_account_name       = module.storage_acc.name
   storage_account_access_key = module.storage_acc.access_key
-  os_type                    = "linux"
+
   https_only                 = true
 
   app_settings = {
     FUNCTIONS_WORKER_RUNTIME = "node"
     WEBSITE_RUN_FROM_PACKAGE = "1"
   }
-
+  
   site_config {
     always_on        = true
     ftps_state       = "Disabled"
     http2_enabled    = true
-    use_32_bit_worker_process = false
+    use_32_bit_worker = false
   }
+
+  virtual_network_subnet_id = module.subnet.subnet_id
 }
 
 # Create a SQL Server
-resource "azurerm_sql_server" "example" {
+resource "azurerm_mssql_server" "example" {
   name                         = var.sql_server_name
   resource_group_name          = module.rg.resource_group_name
   location                     = module.rg.resource_group_location
@@ -82,17 +84,15 @@ resource "azurerm_sql_server" "example" {
 }
 
 # Create a SQL Database
-resource "azurerm_sql_database" "example" {
+resource "azurerm_mssql_database" "example" {
   name                = var.sql_database_name
-  resource_group_name = module.rg.resource_group_name
-  server_name         = azurerm_sql_server.example.name
-  location            = module.rg.resource_group_location
-  edition             = "Standard"
+  server_id         = azurerm_mssql_server.example.id
   collation           = "SQL_Latin1_General_CP1_CI_AS"
-  max_size_bytes      = "1073741824"
   create_mode         = "Default"
+  lifecycle {
+    prevent_destroy = true
+  }
 }
-
 
 module "private_endpoint" {
   source = "./modules/private-endpoint"
@@ -100,7 +100,7 @@ module "private_endpoint" {
   location = module.rg.resource_group_location
   resource_group_name = module.rg.resource_group_name
   subnet_id = module.subnet.subnet_id
-  sql_server_id = azurerm_sql_server.example.id
+  sql_server_id = azurerm_mssql_server.example.id
   sql_server_name = var.sql_server_name
 
 }
