@@ -29,7 +29,7 @@ resource "azurerm_subnet" "snet" {
   name                 = "${var.subnet_name}-snet"
   resource_group_name  = module.rg.resource_group_name
   virtual_network_name = module.vnet.virtual_network_name
-  address_prefixes     = var.address_prefixes
+  address_prefixes     = ["10.0.1.0/24"]
 
 }
 
