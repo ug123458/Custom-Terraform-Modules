@@ -61,7 +61,7 @@ variable "private_endpoint_name" {
 variable "address_prefixes" {
   description = "Address prefixes for the subnet"
   type        = list(string)
-  default     = ["10.0.0.0/16"]
+  default     = ["10.0.0.0/24"]
 }
 
 variable "address_space" {
